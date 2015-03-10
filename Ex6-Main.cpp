@@ -2,7 +2,7 @@
 
 
 int main(int argc, char ** argv) {
-	Game game("Example 06. Shuriken", 1920, 800,true,60,true);
+	Game game("Example 06. Shuriken", 1890, 700,true,60,true);
 
 	try {
 		game.run();

@@ -46,6 +46,7 @@ public:
 	void CreatePyramid(int position);
 	//Creates a random movement
 	void randomMovement();
+	void MovePlayer();
 };
 
 

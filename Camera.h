@@ -23,5 +23,6 @@ public:
 	void lookAt();
 	glm::mat4 returnViewMatrix();
 	void updateCameraPosition(float x, float y, float z);
+	void updateCameraFront(float x, float y, float z);
 };
 

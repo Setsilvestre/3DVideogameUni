@@ -192,24 +192,28 @@ glm::vec3 Geometry::returnRotate(int i){
 void Geometry::Move(int i, int j){
 	if (j == 0){
 		
-			_gameElements[i].translate+=glm::vec3(-0.01,0,0);
+			_gameElements[i].translate+=glm::vec3(-0.5,0,0);
 		
 	}
 	else if (j == 1){
 		
-			_gameElements[i].translate += glm::vec3(0.01, 0, 0);
+			_gameElements[i].translate += glm::vec3(0.5, 0, 0);
 		
 	}
 	else if (j == 2){
 		
-			_gameElements[i].translate += glm::vec3(0, 0.01, 0);
+			_gameElements[i].translate += glm::vec3(0, 0.5, 0);
 		
 	}
 	else if (j == 3){
 		
-			_gameElements[i].translate += glm::vec3(0, -0.01, 0);
+			_gameElements[i].translate += glm::vec3(0, -0.5, 0);
 		
 	}
+}
+
+void Geometry::MovePlayer(){
+	_gameElements[0].translate += glm::vec3(0.0025, 0, 0);
 }
 
 /**

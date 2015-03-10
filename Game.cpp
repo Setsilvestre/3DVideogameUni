@@ -47,7 +47,7 @@ void Game::initSystems() {
 		//Load the current scenario
 	_openGLBuffers.initializeBuffers(_colorProgram);
 		//Creates the camera
-	_camera.create(_screenWidth, _screenHeight, 0, 0.1f,30.0f,30.0f,30.0f);
+	_camera.create(_screenWidth, _screenHeight, 0, 1.0f,30.0f,30.0f,30.0f);
 		//Create several vertex
 	createPrimitivesToRender();
 }
@@ -138,6 +138,22 @@ void Game::processInput() {
 				cout << "Key right pressed" << endl;
 				_myGeometry.Move(0, 1);
 				break;
+			case SDLK_w:
+				cout << "Key w pressed" << endl;
+				_camera.updateCameraFront(0, 0, 0.1);
+				break;
+			case SDLK_s:
+				cout << "Key s pressed" << endl;
+				_camera.updateCameraFront(0, 0, -0.1);
+				break;
+			case SDLK_a:
+				cout << "Key a pressed" << endl;
+				_camera.updateCameraFront(-0.1, 0, 0);
+				break;
+			case SDLK_d:
+				cout << "Key d pressed" << endl;
+				_camera.updateCameraFront(0.1, 0, 0);
+				break;
 			/*case SDLK_PLUS:
 				cout << "Key plus pressed" << endl;
 				modelMatrix = glm::scale(modelMatrix, glm::vec3(1.25, 1.25, 1.25));
@@ -208,10 +224,9 @@ void Game::updateGameObjects() {
 	start = clock();
 	diff = (start - timer) / (double)CLOCKS_PER_SEC;
 	if (diff > 1){
-		_myGeometry.randomMovement();
-		timer =start;
+		_myGeometry.MovePlayer();
 	}
-	_camera.updateCameraPosition(-1, 0, 0);
+	_camera.updateCameraPosition(0.01, 0, 0);
 	_camera.lookAt();
 	/*
 	glm::mat4 trans;
