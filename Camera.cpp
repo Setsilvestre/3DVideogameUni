@@ -19,6 +19,8 @@ void Camera::create(int screenWidth, int screenHeight, bool type, float _near, f
 		this->_projectionHeight = _projectionHeight;
 		this->_cameraPos = glm::vec3(0, 0, 10);
 		this->_cameraFront = glm::vec3(0, 0, -10);
+		_FOV = 45.0f;
+		this->_aspectRatio = screenWidth / screenHeight;
 		_projectionMatrix = glm::ortho(-_projectionWidth / 2, _projectionWidth / 2, -_projectionHeight / 2, _projectionHeight / 2, _near, _far);
 	}
 	//Creates a prespective Camera
@@ -55,6 +57,26 @@ void Camera::updateCameraPosition(float x, float y, float z){
 	_cameraPos +=glm::vec3(x, y, z);
 }
 
+void Camera::setCameraPos(vec3 u){
+	_cameraPos = u;
+	lookAt();
+}
+
 void Camera::updateCameraFront(float x, float y, float z){
 	_cameraFront += glm::vec3(x, y, z);
+}
+
+void Camera::cameraSwapFPS(glm::vec3 u){
+		_cameraPos = vec3(u.x-5,u.y,u.z);
+		_cameraFront = glm::vec3(10, 0, 0);
+		lookAt();
+		//_projectionMatrix = glm::perspective(_FOV, _aspectRatio, 0.0f, 500.0f);
+		_projectionMatrix = glm::ortho(-_projectionWidth / 2, _projectionWidth / 2, -_projectionHeight / 2, _projectionHeight / 2, _near, _far);
+}
+
+void Camera::defaultCamera(){
+	_cameraPos = glm::vec3(0, 0, 10);
+	_cameraFront = glm::vec3(0, 0, -10);
+	lookAt();
+	_projectionMatrix = glm::ortho(-_projectionWidth / 2, _projectionWidth / 2, -_projectionHeight / 2, _projectionHeight / 2, _near, _far);
 }

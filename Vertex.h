@@ -18,9 +18,20 @@ struct ColorRGBA8 {
 	GLubyte a;
 };
 
+struct UV{
+	GLfloat u;
+	GLfloat v;
+};
+
+struct NormalVector{
+	GLfloat nx, ny, nz;
+};
+
 struct Vertex {
 	Position position;
 	ColorRGBA8 color;
+	UV uv;
+	NormalVector normal;
 	void setPosition(GLfloat  x, GLfloat  y, GLfloat  z) {
 		position.x = x;
 		position.y = y;
@@ -32,5 +43,14 @@ struct Vertex {
 		color.g = g;
 		color.b = b;
 		color.a = a;
+	}
+	void setUV(GLfloat u, GLfloat v){
+		uv.u = u;
+		uv.v = v;
+	}
+	void setNormalVector(glm::vec3 vec){
+		normal.nx = vec.x;
+		normal.ny = vec.y;
+		normal.nz = vec.z;
 	}
 };

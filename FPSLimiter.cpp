@@ -39,11 +39,11 @@ void FPSLimiter::forceSynchronization() {
 		updateAverageFPS();
 
 		//Print the current average of FPS
-		if (_printFPS) {
+		/*if (_printFPS) {
 			if (_currentFrame == NUM_SAMPLES - 1) {
 				std::cout << "FPS:" << _fps << std::endl;
 			}
-		}
+		}*/
 		//Force system to sync
 		//Ex: 1000msec / 60 frames per second -> Each frame must be rendered each 16msec
 		//Count how much time we have used to render the current frame

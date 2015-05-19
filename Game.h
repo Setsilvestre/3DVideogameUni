@@ -16,7 +16,15 @@
 #include "Vertex.h"
 #include "Geometry.h"
 #include "Camera.h"
-#define MAX_VERTICES 36*3
+#include "TextureManager.h"
+#include "MaterialManager.h"
+
+#define ORIGINAL_COLOR 0
+#define TEXTURE_COLOR 1
+#define COMBINED_COLOR 2
+#define DRAW_MODE 3
+
+#define MAX_VERTICES 36
 
 //Game has three possible states: INIT (Preparing environment), PLAY (Playing) or EXIT (Exit from the game)
 enum class GameState{INIT, PLAY, EXIT};
@@ -31,6 +39,7 @@ class Game {
 		double start = 0;
 	private:
 			//Attributes	
+		int _drawMode;					//Define how the color is computed
 		std::string _windowTitle;		//Window Title
 		int _screenWidth;				//Screen width in pixels				
 		int _screenHeight;				//Screen height in pixels				
@@ -41,6 +50,9 @@ class Game {
 		OpenGLBuffers _openGLBuffers;	//Manage the openGL buffers
 		Geometry _myGeometry;			//Manage the Figures
 		Camera _camera;					//Manage the camera
+		TextureManager _textureManager;	//Manage all the data related to the different textures used in the game
+		MaterialManager _materialManager; //Manager of the materials
+		int lightENable=0;
 			//Internal methods
 		void initSystems();
 		void loadShaders();		
@@ -49,6 +61,7 @@ class Game {
 		void processInput();
 		void updateGameObjects();
 		void drawGame();	
+		void loadGameTextures();
 		
 };
 

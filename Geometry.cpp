@@ -18,6 +18,7 @@ void Geometry::LoadScene(){
 	fstream myfile;
 	string line, x, y, z;
 	GameElement myElement;
+	AABB myAABB;
 	myfile.open("Vertex.txt", ios::in);
 	myfile >> line;
 	int lenght;
@@ -32,7 +33,10 @@ void Geometry::LoadScene(){
 	//Store the transformation data
 	for (int i = 0; i < lenght; i++){
 		_gameElements.push_back(myElement);
-		for (int j = 0; j < 11; j++){
+		_AABB.push_back(myAABB);
+		for (int j = 0; j < 12; j++){
+		
+			_gameElements[i]._textureRepetion = false;
 			if (j==0){
 				myfile >> line;
 				_gameElements[i].idObject = stoi(line);
@@ -48,12 +52,17 @@ void Geometry::LoadScene(){
 				else if (_gameElements[i].idObject == 3){
 					CreatePyramid(i);
 				}
+				else if (_gameElements[i].idObject == 4){
+					CreateSkyBox(i);
+					_gameElements[i]._textureFile = "./resources/textures/galaxy2.jpg";
+				}
 			}
 			if (j >=1 && j<=3){
 				myfile >> x;
 				myfile >> y;
 				myfile >> z;
 				_gameElements[i].translate = glm::vec3(stof(x), stof(y), stof(z));
+				_AABB[i].center = glm::vec3(stof(x), stof(y), stof(z));
 				j = 3;
 			}
 			if (j ==4 ){
@@ -72,11 +81,180 @@ void Geometry::LoadScene(){
 				myfile >> y;
 				myfile >> z;
 				_gameElements[i].scale = glm::vec3(stof(x), stof(y), stof(z));
+				_AABB[i].extent = glm::vec3(stof(x)*2, stof(y)*2, stof(z)*2);
 				j = 10;
+			}
+			if (j == 11){
+				myfile >> _gameElements[i]._materialType;
+		
 			}
 		}
 	}
 	myfile.close();
+}
+
+bool Geometry::gettextureRepetion(int i){
+	return _gameElements[i]._textureRepetion;
+}
+
+GameElement Geometry::getGameElement(int i){
+	return _gameElements[i];
+}
+
+void Geometry::setTexture(int i, GLuint j){
+	_gameElements[i]._textureID = j;
+}
+
+void Geometry::CreateSkyBox(int position){
+	_data[position][0].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][0].setUV(1.0, 0.0);
+	_data[position][0].setNormalVector(glm::normalize(glm::vec3(1, 1, 1)));
+
+	_data[position][1].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][1].setUV(0.0, 0.0);
+	_data[position][1].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f,- 1.0f)));
+
+	_data[position][2].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][2].setUV(0.0, 1.0);
+	_data[position][2].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][3].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][3].setUV(1.0, 1.0);
+	_data[position][3].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
+	_data[position][4].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][4].setUV(0.0, 0.0);
+	_data[position][4].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][5].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][5].setUV(0.0, 1.0);
+	_data[position][5].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][6].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][6].setUV(1.0, 0.0);
+	_data[position][6].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][7].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][7].setUV(0.0, 1.0);
+	_data[position][7].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][8].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][8].setUV(1.0, 1.0);
+	_data[position][8].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][9].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][9].setUV(1.0, 1.0);
+	_data[position][9].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
+	_data[position][10].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][10].setUV(1.0, 0.0);
+	_data[position][10].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][11].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][11].setUV(0.0, 0.0);
+	_data[position][11].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][12].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][12].setUV(1.0, 0.0);
+	_data[position][12].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][13].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][13].setUV(0.0, 1.0);
+	_data[position][13].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][14].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][14].setUV(1.0, 1.0);
+	_data[position][14].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][15].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][15].setUV(1.0, 0.0);
+	_data[position][15].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][16].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][16].setUV(0.0, 0.0);
+	_data[position][16].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
+	_data[position][17].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][17].setUV(0.0, 1.0);
+	_data[position][17].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][18].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][18].setUV(1.0, 1.0);
+	_data[position][18].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][19].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][19].setUV(1.0, 0.0);
+	_data[position][19].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
+	_data[position][20].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][20].setUV(0.0, 0.0);
+	_data[position][20].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][21].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][21].setUV(1.0, 1.0);
+	_data[position][21].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][22].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][22].setUV(0.0, 0.0);
+	_data[position][22].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][23].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][23].setUV(0.0, 1.0);
+	_data[position][23].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
+	_data[position][24].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][24].setUV(0.0, 0.0);
+	_data[position][24].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][25].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][25].setUV(1.0, 1.0);
+	_data[position][25].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][26].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][26].setUV(1.0, 0.0);
+	_data[position][26].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][27].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][27].setUV(1.0, 1.0);
+	_data[position][27].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][28].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][28].setUV(1.0, 0.0);
+	_data[position][28].setNormalVector(glm::normalize(glm::vec3(-1.0f,- 1.0f, 1.0f)));
+
+	_data[position][29].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][29].setUV(0.0, 0.0);
+	_data[position][29].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][30].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][30].setUV(1.0, 1.0);
+	_data[position][30].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][31].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][31].setUV(0.0, 0.0);
+	_data[position][31].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][32].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][32].setUV(0.0, 1.0);
+	_data[position][32].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][33].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][33].setUV(0.0, 1.0);
+	_data[position][33].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][34].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][34].setUV(1.0, 1.0);
+	_data[position][34].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][35].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][35].setUV(0.0, 0.0);
+	_data[position][35].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	for (int i = 0; i < 36; i++){
+		_data[position][i].setColor(123, 123, 123, 255);
+	}
+	_gameElements[position]._textureFile = "./resources/textures/galaxy2.jpg";
+	_gameElements[position]._textureID = 2;
 }
 
 /**
@@ -84,42 +262,153 @@ void Geometry::LoadScene(){
 * @position is the row position in the array
 */
 void Geometry::CreateCube(int position){
+	_gameElements[position]._textureFile = "./resources/textures/floor.jpg";
+	_gameElements[position]._textureID = 1;
 	_data[position][0].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][0].setUV(1.0, 0.0);
+	_data[position][0].setNormalVector(glm::normalize(glm::vec3(-1, -1, -1)));
+
 	_data[position ][ 1].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][1].setUV(0.0, 0.0);
+	_data[position][1].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 2].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][2].setUV(0.0, 1.0);
+	_data[position][2].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 3].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][3].setUV(1.0, 1.0);
+	_data[position][3].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 4].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][4].setUV(0.0, 0.0);
+	_data[position][4].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 5].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][5].setUV(0.0, 1.0);
+	_data[position][5].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 6].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][6].setUV(1.0, 0.0);
+	_data[position][6].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 7].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][7].setUV(0.0, 1.0);
+	_data[position][7].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 8].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][8].setUV(1.0, 1.0);
+	_data[position][8].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 9].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][9].setUV(1.0, 1.0);
+	_data[position][9].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 10].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][10].setUV(1.0, 0.0);
+	_data[position][10].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 11].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][11].setUV(0.0, 0.0);
+	_data[position][11].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 12].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][12].setUV(1.0, 0.0);
+	_data[position][12].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 13].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][13].setUV(0.0, 1.0);
+	_data[position][13].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 14].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][14].setUV(1.0, 1.0);
+	_data[position][14].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 15].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][15].setUV(1.0, 0.0);
+	_data[position][15].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 16].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][16].setUV(0.0, 0.0);
+	_data[position][16].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 17].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][17].setUV(0.0, 1.0);
+	_data[position][17].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 18].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][18].setUV(1.0, 1.0);
+	_data[position][18].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 19].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][19].setUV(1.0, 0.0);
+	_data[position][19].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 20].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][20].setUV(0.0, 0.0);
+	_data[position][20].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 21].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][21].setUV(1.0, 1.0);
+	_data[position][21].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 22].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][22].setUV(0.0, 0.0);
+	_data[position][22].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 23].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][23].setUV(0.0, 1.0);
+	_data[position][23].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 24].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][24].setUV(0.0, 0.0);
+	_data[position][24].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
 	_data[position ][ 25].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][25].setUV(1.0, 1.0);
+	_data[position][25].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 26].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][26].setUV(1.0, 0.0);
+	_data[position][26].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
 	_data[position ][ 27].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][27].setUV(1.0, 1.0);
+	_data[position][27].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 28].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][28].setUV(1.0, 0.0);
+	_data[position][28].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 29].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][29].setUV(0.0, 0.0);
+	_data[position][29].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 30].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][30].setUV(1.0, 1.0);
+	_data[position][30].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 31].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][31].setUV(0.0, 0.0);
+	_data[position][31].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
 	_data[position ][ 32].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][32].setUV(0.0, 1.0);
+	_data[position][32].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 33].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][33].setUV(0.0, 1.0);
+	_data[position][33].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 34].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][34].setUV(1.0, 1.0);
+	_data[position][34].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
 	_data[position ][ 35].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][35].setUV(0.0, 0.0);
+	_data[position][35].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+
 	if (_gameElements[position].idObject == 0){
 		for (int i = 0; i < 36; i++){
 			_data[position ][ i].setColor(50, 20, 255, 255);
@@ -135,6 +424,7 @@ void Geometry::CreateCube(int position){
 			_data[position ][ i].setColor(123, 123, 123, 255);
 		}
 	}
+
 }
 
 /**
@@ -193,27 +483,27 @@ void Geometry::Move(int i, int j){
 	if (j == 0){
 		
 			_gameElements[i].translate+=glm::vec3(-0.5,0,0);
-		
+			_AABB[i].center += glm::vec3(-0.5, 0, 0);
 	}
 	else if (j == 1){
 		
 			_gameElements[i].translate += glm::vec3(0.5, 0, 0);
-		
+			_AABB[i].center += glm::vec3(0.5, 0, 0);
 	}
 	else if (j == 2){
 		
 			_gameElements[i].translate += glm::vec3(0, 0.5, 0);
-		
+			_AABB[i].center += glm::vec3(0, 0.5, 0);
 	}
 	else if (j == 3){
 		
 			_gameElements[i].translate += glm::vec3(0, -0.5, 0);
-		
+			_AABB[i].center += glm::vec3(0, -0.5, 0);
 	}
 }
 
 void Geometry::MovePlayer(){
-	_gameElements[0].translate += glm::vec3(0.0025, 0, 0);
+	_gameElements[0].translate += glm::vec3(0.2, 0, 0);
 }
 
 /**
@@ -242,9 +532,236 @@ void Geometry::CreatePyramid(int position){
 * Creates a random movement
 */
 void Geometry::randomMovement(){
+
 	for (int i = 0; i < returnPrimitives(); i++){
 		if (_gameElements[i].idObject == 1){
 			_gameElements[i].translate += glm::vec3(rand() / (RAND_MAX + 1)*(0.1 - 0.01) - 0.01, rand() / (RAND_MAX + 1)*(0.1 - 0.01) - 0.01, rand() / (RAND_MAX + 1)*(0.1 - 0.01) - 0.01);
 		}
 	}
+}
+
+void Geometry::moveAll(){
+	//care!
+	for (int i = 1; i < 7; i++){
+		_gameElements[i].translate += glm::vec3(-0.02, 0, 0);
+		_AABB[i].center += glm::vec3(-0.02, 0, 0);
+	}
+	if (_numberOfPrimitives> 8){
+		for (int i = 7; i < _numberOfPrimitives; i++){
+			_gameElements[i].translate -= glm::vec3(-0.06, 0, 0);
+			_AABB[i].center += glm::vec3(-0.06, 0, 0);
+		}
+	}
+}
+
+bool Geometry::OverlapAABB(int one, int two){
+	if (abs(_AABB[one].center.x - _AABB[two].center.x) > abs(_AABB[one].extent.x - _AABB[two].extent.x)
+		|| abs(_AABB[one].center.y - _AABB[two].center.y) > abs(_AABB[one].extent.y - _AABB[two].extent.y)
+		|| abs(_AABB[one].center.z - _AABB[two].center.z) > abs(_AABB[one].extent.z - _AABB[two].extent.z)
+		){
+		return false;
+	}
+	else return true;
+}
+
+void Geometry::DestroyEnemy(int i){
+	_gameElements[i].translate += glm::vec3(0.0, 50.0, 0.0);
+	_AABB[i].center += glm::vec3(0.0, 50.0, 0.0);
+}
+
+glm::vec3 Geometry::returnPlayerPos(){
+	return _gameElements[0].translate;
+}
+
+GLuint Geometry::returntextureID(int i){
+	return _gameElements[i]._textureID;
+}
+
+void Geometry::createBullet(){
+	Vertex ** temp;
+	temp = new Vertex*[_numberOfPrimitives+1];
+	for (int i = 0; i < _numberOfPrimitives+1; i++){
+		temp[i] = new Vertex[36 * 3];
+	}
+	for (int i = 0; i < _numberOfPrimitives; i++){
+		temp[i] = _data[i];
+	}
+	CreateBulletCube(temp, _numberOfPrimitives + 1);
+
+	_data = new Vertex*[_numberOfPrimitives + 1];
+	for (int i = 0; i < _numberOfPrimitives + 1; i++){
+		_data[i] = new Vertex[36 * 3];
+	}
+	for (int i = 0; i < _numberOfPrimitives+1; i++){
+		_data[i] = temp[i];
+	}
+
+	GameElement myElement;
+	_gameElements.push_back(myElement);
+	
+	_gameElements[_numberOfPrimitives].translate = _gameElements[0].translate;
+	_gameElements[_numberOfPrimitives].scale = glm::vec3(0.1, 0.1, 0.1);
+	_gameElements[_numberOfPrimitives].rotate = glm::vec3(0.0, 0.0, 0.0);
+	_gameElements[_numberOfPrimitives].angle = 0;
+	_gameElements[_numberOfPrimitives]._textureFile = "./resources/textures/floor.jpg";
+	_gameElements[_numberOfPrimitives]._textureRepetion = false;
+	_gameElements[_numberOfPrimitives]._materialType = 0;
+	AABB myAABB;
+	_AABB.push_back(myAABB);
+	_AABB[_numberOfPrimitives].center = _gameElements[_numberOfPrimitives].translate;
+	_AABB[_numberOfPrimitives].extent = glm::vec3(0.1 * 2, 0.1 * 2, 0.1 * 2);
+	_numberOfPrimitives++;
+
+}
+
+
+void Geometry::CreateBulletCube(Vertex **_data, int position){
+	_data[position][0].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][0].setUV(0.0, 0.0);
+	_data[position][0].setNormalVector(glm::normalize(glm::vec3(-1, -1, -1)));
+
+	_data[position][1].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][1].setUV(0.0, 1.0);
+	_data[position][1].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
+	_data[position][2].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][2].setUV(1.0, 0.0);
+	_data[position][2].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][3].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][3].setUV(1.0, 1.0);
+	_data[position][3].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
+	_data[position][4].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][4].setUV(1.0, 1.0);
+	_data[position][4].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][5].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][5].setUV(0.0, 1.0);
+	_data[position][5].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][6].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][6].setUV(1.0, 1.0);
+	_data[position][6].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][7].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][7].setUV(0.0, 0.0);
+	_data[position][7].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][8].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][8].setUV(1.0, 0.0);
+	_data[position][8].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][9].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][9].setUV(1.0, 1.0);
+	_data[position][9].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
+	_data[position][10].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][10].setUV(1.0, 0.0);
+	_data[position][10].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][11].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][11].setUV(0.0, 0.0);
+	_data[position][11].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][12].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][12].setUV(0.0, 0.0);
+	_data[position][12].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][13].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][13].setUV(1.0, 0.0);
+	_data[position][13].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][14].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][14].setUV(0.0, 1.0);
+	_data[position][14].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][15].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][15].setUV(0.0, 0.0);
+	_data[position][15].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][16].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][16].setUV(1.0, 0.0);
+	_data[position][16].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
+	_data[position][17].setPosition(-1.0f, -1.0f, -1.0f);
+	_data[position][17].setUV(0.0, 0.0);
+	_data[position][17].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+
+	_data[position][18].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][18].setUV(0.0, 0.0);
+	_data[position][18].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][19].setPosition(-1.0f, -1.0f, 1.0f);
+	_data[position][19].setUV(1.0, 0.0);
+	_data[position][19].setNormalVector(glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)));
+
+	_data[position][20].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][20].setUV(1.0, 1.0);
+	_data[position][20].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][21].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][21].setUV(0.0, 0.0);
+	_data[position][21].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][22].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][22].setUV(0.0, 1.0);
+	_data[position][22].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][23].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][23].setUV(1.0, 1.0);
+	_data[position][23].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
+	_data[position][24].setPosition(1.0f, -1.0f, -1.0f);
+	_data[position][24].setUV(0.0, 1.0);
+	_data[position][24].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
+
+	_data[position][25].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][25].setUV(0.0, 0.0);
+	_data[position][25].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][26].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][26].setUV(1.0, 1.0);
+	_data[position][26].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+	_data[position][27].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][27].setUV(1.0, 1.0);
+	_data[position][27].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][28].setPosition(1.0f, 1.0f, -1.0f);
+	_data[position][28].setUV(1.0, 1.0);
+	_data[position][28].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+
+	_data[position][29].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][29].setUV(0.0, 1.0);
+	_data[position][29].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][30].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][30].setUV(1.0, 1.0);
+	_data[position][30].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][31].setPosition(-1.0f, 1.0f, -1.0f);
+	_data[position][31].setUV(0.0, 1.0);
+	_data[position][31].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
+
+	_data[position][32].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][32].setUV(0.0, 0.0);
+	_data[position][32].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][33].setPosition(1.0f, 1.0f, 1.0f);
+	_data[position][33].setUV(0.0, 1.0);
+	_data[position][33].setNormalVector(glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
+
+	_data[position][34].setPosition(-1.0f, 1.0f, 1.0f);
+	_data[position][34].setUV(1.0, 0.0);
+	_data[position][34].setNormalVector(glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+	_data[position][35].setPosition(1.0f, -1.0f, 1.0f);
+	_data[position][35].setUV(0.0, 0.0);
+	_data[position][35].setNormalVector(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)));
+
+		for (int i = 0; i < 36; i++){
+			_data[position][i].setColor(50, 20, 255, 255);
+		}
+
 }

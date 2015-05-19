@@ -21,8 +21,10 @@ public:
 	int getScreenWidth() { return _screenWidth; }
 	int getScreenHeight() { return _screenHeight; }
 	void swapBuffer();		
+	
 private:
 	SDL_Window * _sdlWindow;
 	int _screenHeight;
 	int _screenWidth;	
+	void setglHint();
 };

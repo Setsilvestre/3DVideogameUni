@@ -7,6 +7,7 @@
 #include "GameElement.h"
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
+#include "AABB.h"
 
 using namespace std;
 
@@ -15,8 +16,12 @@ class Geometry
 {
 	//For the managment of the figure transformations
 	vector <GameElement> _gameElements;
+	//For the managment of the AABB
+	vector <AABB> _AABB;
+
 	//Vertex to store the vertex information
 	Vertex **_data;
+	
 	//To store the number of figures
 	int _numberOfPrimitives;
 public:
@@ -46,7 +51,22 @@ public:
 	void CreatePyramid(int position);
 	//Creates a random movement
 	void randomMovement();
+	//Moves all the World
+	void moveAll();
+	//Move the player
 	void MovePlayer();
+	//Check for Collisions
+	bool OverlapAABB(int one, int two);
+	void DestroyEnemy(int i);
+	glm::vec3 returnPlayerPos();
+	GLuint returntextureID(int i);
+	bool gettextureRepetion(int i);
+	GameElement getGameElement(int i);
+	void setTexture(int i, GLuint j);
+	void createBullet();
+	void CreateBulletCube(Vertex **temp, int position);
+	void CreateSkyBox(int position);
+
 };
 
 
